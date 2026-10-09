@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天线小栈 · 销售记账工作台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F766E'/%3E%3Cg stroke='%23fff' stroke-width='4' stroke-linecap='round' fill='none'%3E%3Cpath d='M22 24a14 14 0 0 0 0 16'/%3E%3Cpath d='M42 24a14 14 0 0 1 0 16'/%3E%3Cpath d='M27.5 28.5a7.5 7.5 0 0 0 0 7'/%3E%3Cpath d='M36.5 28.5a7.5 7.5 0 0 1 0 7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='5' fill='%23F5C76B'/%3E%3C/svg%3E">
+<style>
+/* ============ 设计令牌 ============ */
+:root{
+  --bg:#F2F5F1;
+  --surface:#FFFFFF;
+  --ink:#1B2B27;
+  --ink-2:#5A6A64;
+  --ink-3:#8CA09A;
+  --line:#E2E8E3;
+  --primary:#0F766E;
+  --primary-2:#0A5C56;
+  --primary-soft:#E4F3F0;
+  --accent:#C97E10;
+  --accent-soft:#FBF0DC;
+  --danger:#C73B3B;
+  --danger-soft:#FBEAEA;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(24,44,38,.05), 0 10px 28px -14px rgba(24,44,38,.14);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.55;
+  font-size:14px;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+/* ============ 顶部 ============ */
+.app-header{
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:30;
+}
+.header-inner{
+  max-width:1180px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+.brand-mark{
+  width:42px;height:42px;border-radius:11px;
+  background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  flex:none;
+}
+.brand-mark svg{width:24px;height:24px}
+.brand-name{font-size:17px;font-weight:700;letter-spacing:.5px}
+.brand-sub{font-size:12px;color:var(--ink-2);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.prod-chip{
+  display:flex;align-items:center;gap:7px;
+  background:var(--primary-soft);color:var(--primary-2);
+  border:1px solid #CBE5E0;border-radius:999px;
+  padding:6px 12px;font-size:12.5px;font-weight:600;
+}
+.prod-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;
+  transition:background .15s,border-color .15s,color .15s,transform .05s;
+  white-space:nowrap;
+}
+.btn:hover{background:#F4F7F4;border-color:#CBD6D0}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:15px;height:15px}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{background:var(--primary-2)}
+.btn.danger{color:var(--danger);border-color:#EEC7C7}
+.btn.danger:hover{background:var(--danger-soft)}
+.btn.danger-solid{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.danger-solid:hover{background:#A93131}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-2)}
+.btn.ghost:hover{background:var(--bg);color:var(--ink)}
+
+/* ============ 主区域 ============ */
+.main{max-width:1180px;margin:0 auto;padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px}
+
+/* 统计卡片 */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:9px;
+}
+.stat-head{display:flex;align-items:center;gap:9px;color:var(--ink-2);font-size:12.5px;font-weight:600}
+.stat-ico{
+  width:26px;height:26px;border-radius:8px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--primary-soft);color:var(--primary);
+}
+.stat-ico svg{width:14px;height:14px}
+.stat-ico.amber{background:var(--accent-soft);color:var(--accent)}
+.stat-value{font-size:26px;font-weight:700;letter-spacing:-.3px;line-height:1.15}
+.stat-value.amber{color:var(--accent)}
+.stat-sub{font-size:12px;color:var(--ink-3)}
+
+/* 中部仪表区 */
+.dash-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;align-items:stretch}
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px 18px;
+}
+.panel-title{font-size:14.5px;font-weight:700;margin-bottom:2px}
+.panel-sub{font-size:12px;color:var(--ink-3);margin-bottom:12px}
+.chart-box{width:100%;height:250px}
+.chart-empty{
+  height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  color:var(--ink-3);font-size:13px;
+}
+.chart-empty svg{width:40px;height:40px;opacity:.5}
+/* 折线/柱 fallback */
+.bars{display:flex;align-items:flex-end;gap:3px;height:200px;padding:8px 2px 0}
+.bars .bar{flex:1;background:var(--primary);border-radius:3px 3px 0 0;min-width:2px;position:relative;opacity:.85}
+.bars .bar:hover{opacity:1}
+.bars .bar.today{background:var(--accent)}
+.bars-label{display:flex;gap:3px;margin-top:6px}
+.bars-label span{flex:1;font-size:10px;color:var(--ink-3);text-align:center;white-space:nowrap;overflow:hidden}
+
+/* 客户 TOP5 */
+.top-list{display:flex;flex-direction:column;gap:12px}
+.top-item{display:flex;flex-direction:column;gap:5px}
+.top-row{display:flex;align-items:center;gap:9px}
+.top-rank{
+  width:20px;height:20px;border-radius:6px;flex:none;
+  background:var(--bg);color:var(--ink-2);
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.top-item:nth-child(1) .top-rank{background:#0F766E;color:#fff}
+.top-item:nth-child(2) .top-rank{background:#2E8B85;color:#fff}
+.top-item:nth-child(3) .top-rank{background:#E0A54B;color:#fff}
+.top-name{font-weight:600;font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-amt{font-size:13px;font-weight:700;color:var(--primary-2)}
+.top-meta{font-size:11.5px;color:var(--ink-3)}
+.top-bar{height:5px;border-radius:3px;background:var(--bg);overflow:hidden}
+.top-bar i{display:block;height:100%;background:var(--primary);border-radius:3px}
+.top-empty{padding:26px 0;text-align:center;color:var(--ink-3);font-size:13px}
+
+/* 记录表 */
+.records-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.records-toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:14px 18px;border-bottom:1px solid var(--line);
+}
+.search-box{
+  position:relative;flex:1;min-width:210px;max-width:340px;
+}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-3)}
+.search-box input{
+  width:100%;border:1px solid var(--line);border-radius:9px;
+  padding:8px 12px 8px 32px;font-size:13px;background:var(--bg);
+  color:var(--ink);
+}
+.search-box input:focus{outline:none;border-color:var(--primary);background:#fff}
+.records-count{font-size:12.5px;color:var(--ink-2);margin-left:auto;white-space:nowrap}
+.records-total{font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.records-total b{color:var(--accent)}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:820px}
+colgroup col.c-date{width:12%}
+colgroup col.c-cust{width:18%}
+colgroup col.c-prod{width:16%}
+colgroup col.c-ver{width:10%}
+colgroup col.c-price{width:10%}
+colgroup col.c-act{width:10%}
+colgroup col.c-amt{width:12%}
+colgroup col.c-ops{width:12%}
+thead th{
+  text-align:left;font-size:12px;font-weight:700;color:var(--ink-2);
+  padding:10px 12px;background:#F7FAF7;border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+thead th.sortable{cursor:pointer;user-select:none}
+thead th.sortable:hover{color:var(--primary)}
+thead th .sort-arrow{font-size:10px;margin-left:2px}
+tbody td{
+  padding:11px 12px;font-size:13px;border-bottom:1px solid var(--line);
+  vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#F8FBF8}
+.c-date{color:var(--ink-2);font-size:12.5px}
+.c-prod{font-weight:600}
+.c-ver{color:var(--ink-2)}
+.c-price{color:var(--ink-2)}
+.c-act .chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--primary-soft);color:var(--primary-2);
+  border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;
+}
+.c-act .chip svg{width:12px;height:12px}
+.c-amt{font-weight:700;color:var(--primary-2)}
+.c-ops{display:flex;gap:4px}
+.ico-btn{
+  width:28px;height:28px;border-radius:7px;border:1px solid transparent;
+  background:transparent;color:var(--ink-3);
+  display:inline-flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.ico-btn svg{width:14px;height:14px}
+.ico-btn:hover{background:var(--primary-soft);color:var(--primary);border-color:#CBE5E0}
+.ico-btn.del:hover{background:var(--danger-soft);color:var(--danger);border-color:#EEC7C7}
+.ico-btn.fb.has{color:#9A6410;background:var(--accent-soft);border-color:#EAC98F}
+.ico-btn.fb.has:hover{background:var(--accent-soft);color:#7A4F08}
+.ico-btn .fb-cnt{
+  position:absolute;top:-6px;right:-6px;min-width:15px;height:15px;border-radius:999px;
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 3px;
+}
+tr.empty-row td{
+  text-align:center;padding:46px 16px;color:var(--ink-3);
+  white-space:normal;
+}
+.empty-inline{display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-inline svg{width:46px;height:46px;opacity:.45}
+.empty-inline .t1{font-size:14px;font-weight:600;color:var(--ink-2)}
+.empty-inline .t2{font-size:12.5px}
+
+/* ============ 模态 ============ */
+.overlay{
+  position:fixed;inset:0;background:rgba(20,36,31,.42);z-index:60;
+  display:flex;align-items:center;justify-content:center;padding:18px;
+  opacity:0;pointer-events:none;transition:opacity .18s;
+}
+.overlay.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--surface);border-radius:14px;width:100%;max-width:520px;
+  box-shadow:0 24px 60px -20px rgba(12,30,24,.35);
+  transform:translateY(8px);transition:transform .18s;max-height:92vh;overflow:auto;
+}
+.overlay.open .modal{transform:translateY(0)}
+.modal-head{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+}
+.modal-title{font-size:15.5px;font-weight:700;flex:1}
+.modal-body{padding:18px 20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1 / -1}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.field label .req{color:var(--danger)}
+.field input{
+  border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13.5px;
+  background:#fff;color:var(--ink);width:100%;
+}
+.field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.12)}
+.field .err{font-size:11.5px;color:var(--danger);min-height:14px}
+.amount-preview{
+  grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--accent-soft);border:1px dashed #EAC98F;border-radius:9px;padding:11px 14px;
+}
+.amount-preview .lbl{font-size:12.5px;color:#8A6214;font-weight:600}
+.amount-preview .val{font-size:18px;font-weight:800;color:var(--accent)}
+.modal-foot{
+  display:flex;justify-content:flex-end;gap:9px;
+  padding:14px 20px;border-top:1px solid var(--line);
+  background:#FBFCFA;border-radius:0 0 14px 14px;
+}
+.confirm-msg{font-size:13.5px;color:var(--ink);padding:6px 2px;line-height:1.7}
+.confirm-msg b{color:var(--primary-2)}
+
+/* ============ Toast ============ */
+.toast-wrap{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{
+  background:var(--ink);color:#fff;border-radius:999px;
+  padding:9px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 10px 26px -8px rgba(12,30,24,.45);
+  opacity:0;transform:translateY(-8px);transition:opacity .22s,transform .22s;
+  max-width:88vw;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast svg{width:15px;height:15px;flex:none}
+.toast.ok svg{color:#7FE0C0}
+.toast.warn svg{color:#F5C76B}
+
+/* ============ 页脚 ============ */
+.app-footer{
+  max-width:1180px;margin:0 auto;padding:4px 20px 26px;
+  font-size:12px;color:var(--ink-3);display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+}
+.app-footer svg{width:13px;height:13px;opacity:.7}
+
+/* ============ 通用控件补充 ============ */
+[hidden]{display:none!important}
+button.prod-chip{font-family:inherit;cursor:pointer;transition:background .15s,border-color .15s}
+button.prod-chip:hover{background:#D8EEEA;border-color:#9CCFC8}
+.field-sel,.field-area{
+  border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13.5px;
+  background:#fff;color:var(--ink);width:100%;
+}
+.field-sel:focus,.field-area:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.12)}
+textarea.field-area{resize:vertical;min-height:96px;line-height:1.6}
+.field-link{
+  font-size:11.5px;color:var(--primary);font-weight:600;cursor:pointer;
+  background:none;border:none;padding:0;margin-left:6px;text-decoration:underline;text-underline-offset:2px;
+}
+.field-link:hover{color:var(--primary-2)}
+.btn .badge{
+  min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+  background:var(--accent);color:#fff;font-size:11px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.chip-btn{
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.chip-btn:hover{border-color:#CBD6D0;color:var(--ink)}
+.chip-btn.active{background:var(--primary-soft);border-color:#9CCFC8;color:var(--primary-2)}
+
+/* ============ 用户反馈 ============ */
+.feedback-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.feedback-head{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:14px 18px;border-bottom:1px solid var(--line);
+}
+.feedback-head .titles{margin-right:auto}
+.feedback-head .panel-title{font-size:14.5px;font-weight:700}
+.feedback-head .panel-sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+.feedback-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fb-filters{display:flex;gap:5px}
+.fb-list{padding:8px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.fb-card{
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;
+  display:flex;gap:14px;align-items:flex-start;
+  transition:border-color .15s,background .15s;
+}
+.fb-card:hover{border-color:#CBD6D0}
+.fb-card.done{background:#F7FAF7;opacity:.72}
+.fb-main{flex:1;min-width:0}
+.fb-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.fb-type{font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 8px;flex:none}
+.fb-source{font-weight:700;font-size:13.5px}
+.fb-date{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.fb-content{font-size:13.5px;line-height:1.7;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.fb-meta{margin-top:6px;font-size:12px;color:var(--ink-3)}
+.fb-ops{display:flex;flex-direction:column;gap:7px;align-items:flex-end;flex:none}
+.fb-status{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+.fb-status.pending{background:var(--accent-soft);color:#9A6410}
+.fb-status.done{background:#E4F3E8;color:#1E7A3C}
+.btn.mini{padding:5px 11px;font-size:12px;border-radius:8px}
+.fb-empty{
+  padding:34px 0;display:flex;flex-direction:column;align-items:center;gap:9px;
+  color:var(--ink-3);font-size:13px;text-align:center;
+}
+.fb-empty svg{width:40px;height:40px;opacity:.45}
+
+/* ============ 产品设置 ============ */
+.prod-form{
+  display:grid;grid-template-columns:1.3fr .8fr .8fr auto;gap:10px;
+  align-items:start;margin-bottom:16px;
+}
+.prod-form .p-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.prod-form label{font-size:12px;font-weight:600;color:var(--ink-2)}
+.prod-form input{
+  border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13.5px;width:100%;
+}
+.prod-form input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.12)}
+.prod-form .err{font-size:11px;color:var(--danger);min-height:13px}
+.prod-list{display:flex;flex-direction:column;gap:8px}
+.prod-item{
+  display:flex;align-items:center;gap:10px;
+  border:1px solid var(--line);border-radius:10px;padding:9px 12px;
+}
+.prod-item .p-name{font-weight:700;font-size:13.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prod-item .p-ver{font-size:12px;color:var(--ink-2);background:var(--bg);border-radius:6px;padding:2px 8px;flex:none}
+.prod-item .p-price{font-size:13px;font-weight:700;color:var(--accent);flex:none}
+.prod-item .p-ops{display:flex;gap:3px;flex:none}
+.prod-empty{text-align:center;color:var(--ink-3);font-size:13px;padding:14px 0}
+
+/* ============ 数据管理 ============ */
+.data-actions{display:flex;flex-direction:column;gap:10px}
+.data-row{
+  display:flex;align-items:center;gap:12px;
+  border:1px solid var(--line);border-radius:11px;padding:12px 14px;
+}
+.data-row .d-ico{
+  width:36px;height:36px;border-radius:10px;flex:none;
+  background:var(--primary-soft);color:var(--primary);
+  display:flex;align-items:center;justify-content:center;
+}
+.data-row .d-ico svg{width:18px;height:18px}
+.data-row.danger .d-ico{background:var(--danger-soft);color:var(--danger)}
+.data-row .d-info{flex:1;min-width:0}
+.data-row .d-title{font-size:13.5px;font-weight:700}
+.data-row .d-desc{font-size:12px;color:var(--ink-3);margin-top:2px}
+
+/* ============ 反馈关联记录 ============ */
+.fb-record-info{
+  grid-column:1 / -1;
+  background:var(--primary-soft);border:1px solid #CBE5E0;border-radius:9px;
+  padding:9px 12px;font-size:12.5px;color:var(--primary-2);font-weight:600;
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:980px){
+  .dash-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .header-inner{padding:12px 14px}
+  .brand-name{font-size:15.5px}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-value{font-size:22px}
+  .main{padding:16px 14px 32px}
+  .records-toolbar{flex-direction:column;align-items:stretch}
+  .search-box{max-width:none}
+  .records-count{margin-left:0}
+  .form-grid{grid-template-columns:1fr}
+  .btn{padding:8px 11px}
+  .fb-card{flex-direction:column}
+  .fb-ops{flex-direction:row;align-items:center;justify-content:flex-end}
+  .prod-form{grid-template-columns:1fr 1fr}
+  .prod-form .p-submit{align-self:end}
+}
+
+/* ============ 登录页 ============ */
+body.locked{overflow:hidden}
+.login-mask{
+  position:fixed;inset:0;z-index:200;
+  background:
+    radial-gradient(1000px 500px at 85% -10%, rgba(15,118,110,.12), transparent 60%),
+    radial-gradient(800px 420px at -10% 110%, rgba(201,126,16,.10), transparent 55%),
+    var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-mask.hidden{display:none}
+.login-card{
+  width:100%;max-width:380px;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 20px 50px -22px rgba(24,44,38,.28);
+  padding:34px 32px 26px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.login-mark{
+  width:56px;height:56px;border-radius:15px;
+  background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-mark svg{width:30px;height:30px}
+.login-title{font-size:17px;font-weight:700;letter-spacing:.5px;margin-top:14px}
+.login-sub{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+.login-form{width:100%;margin-top:22px;display:flex;flex-direction:column;gap:8px}
+.login-label{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.login-input{
+  width:100%;border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;font-size:14px;color:var(--ink);
+  background:var(--surface);transition:border-color .15s,box-shadow .15s;
+}
+.login-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,118,110,.14)}
+.pass-wrap{position:relative}
+.pass-wrap .login-input{padding-right:42px}
+.pass-eye{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border:none;background:transparent;color:var(--ink-3);
+  display:flex;align-items:center;justify-content:center;border-radius:8px;
+}
+.pass-eye:hover{color:var(--ink);background:var(--bg)}
+.pass-eye svg{width:17px;height:17px}
+.login-err{
+  font-size:12.5px;color:var(--danger);background:var(--danger-soft);
+  border:1px solid #F2CFCF;border-radius:9px;padding:8px 11px;margin-top:2px;
+}
+.login-btn{width:100%;justify-content:center;padding:11px;font-size:14px;margin-top:8px}
+.login-btn:disabled{opacity:.55;cursor:not-allowed}
+.login-note{font-size:11.5px;color:var(--ink-3);text-align:center;margin-top:14px}
+@keyframes login-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.login-card.shake{animation:login-shake .35s}
+@media (max-width:560px){
+  .login-card{padding:28px 22px 22px}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- ============ 登录页 ============ -->
+<div class="login-mask" id="loginMask">
+  <div class="login-card" id="loginCard" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <path d="M8.4 8.4a5.1 5.1 0 0 0 0 7.2"/>
+        <path d="M15.6 8.4a5.1 5.1 0 0 1 0 7.2"/>
+        <path d="M5.4 5.4a9.3 9.3 0 0 0 0 13.2"/>
+        <path d="M18.6 5.4a9.3 9.3 0 0 1 0 13.2"/>
+        <circle cx="12" cy="12" r="2.3" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="login-title" id="loginTitle">天线小栈 · 销售记账工作台</div>
+    <div class="login-sub">登录后查看销售台账</div>
+    <form class="login-form" id="loginForm" novalidate>
+      <label class="login-label" for="loginUser">账号</label>
+      <input class="login-input" id="loginUser" type="text" autocomplete="username" placeholder="请输入账号" spellcheck="false">
+      <label class="login-label" for="loginPass">密码</label>
+      <div class="pass-wrap">
+        <input class="login-input" id="loginPass" type="password" autocomplete="current-password" placeholder="请输入密码">
+        <button type="button" class="pass-eye" id="passEye" aria-label="显示密码">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ico-eye"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></g>
+            <path class="ico-eye-off" d="M4.5 4.5l15 15" style="display:none"/>
+          </svg>
+        </button>
+      </div>
+      <div class="login-err" id="loginErr" hidden></div>
+      <button class="btn primary login-btn" id="loginBtn" type="submit">登 录</button>
+      <div class="login-note">数据保存在本机浏览器 · 仅限授权人员使用</div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 顶部 ============ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+          <path d="M8.4 8.4a5.1 5.1 0 0 0 0 7.2"/>
+          <path d="M15.6 8.4a5.1 5.1 0 0 1 0 7.2"/>
+          <path d="M5.4 5.4a9.3 9.3 0 0 0 0 13.2"/>
+          <path d="M18.6 5.4a9.3 9.3 0 0 1 0 13.2"/>
+          <circle cx="12" cy="12" r="2.3" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">天线小栈 · 销售记账工作台</div>
+        <div class="brand-sub">产品授权销售台账 · 数据保存在本机浏览器</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="prod-chip" id="prodChip" type="button" title="点击管理产品配置">
+        <span class="dot"></span><span id="prodChipText">HFSS中文助手 · V1.0.1 · ¥19.90</span>
+      </button>
+      <button class="btn" id="btnFeedback" type="button" title="查看用户反馈">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4v3l4-3h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/><path d="M8 10h8M8 13.5h5"/></svg>
+        反馈 <span class="badge num" id="fbBadge" hidden>0</span>
+      </button>
+      <button class="btn" id="btnExport" type="button" title="导出为 CSV，可用 Excel 打开">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+        导出CSV
+      </button>
+      <button class="btn" id="btnData" type="button" title="导出备份 / 导入备份 / 清空数据">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="2.6"/><path d="M4 5.5v6c0 1.4 3.6 2.6 8 2.6s8-1.2 8-2.6v-6"/><path d="M4 11.5v6c0 1.4 3.6 2.6 8 2.6s8-1.2 8-2.6v-6"/></svg>
+        数据管理
+      </button>
+      <button class="btn primary" id="btnAdd" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        新增记录
+      </button>
+      <button class="btn ghost" id="btnLogout" type="button" title="退出登录">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 17l-5-5 5-5"/><path d="M15 12H5"/></svg>
+        退出
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ============ 统计卡片 ============ -->
+  <section class="stat-grid" aria-label="销售统计">
+    <div class="stat-card">
+      <div class="stat-head"><span class="stat-ico amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2a3.2 3.2 0 0 0-5.6 2.3c0 3 5.6 2 5.6 5a3.2 3.2 0 0 1-5.6 1.3"/><path d="M12 4.5v2M12 17.5v2"/></svg>
+      </span>累计销售额</div>
+      <div class="stat-value amber num" id="statAmount">¥0.00</div>
+      <div class="stat-sub num" id="statAmountSub">近30天 ¥0.00 · 今日 ¥0.00</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-head"><span class="stat-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.4"/><path d="M3.6 19.5c.7-3.2 3.1-5 6.4-5s5.7 1.8 6.4 5"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 5.6"/><path d="M18.2 14.9c1.4.8 2.2 2.1 2.5 3.7"/></svg>
+      </span>客户数</div>
+      <div class="stat-value num" id="statCustomers">0</div>
+      <div class="stat-sub">按客户名称去重统计</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-head"><span class="stat-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.6H11L9.5 22 18 9.8h-6.4L13 2z"/></svg>
+      </span>激活总次数</div>
+      <div class="stat-value num" id="statActivations">0</div>
+      <div class="stat-sub">授权激活次数合计</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-head"><span class="stat-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 9.5h16"/><path d="M8 14.5h5"/></svg>
+      </span>销售记录</div>
+      <div class="stat-value num" id="statRecords">0</div>
+      <div class="stat-sub">共 N 笔销售</div>
+    </div>
+  </section>
+
+  <!-- ============ 仪表区：趋势图 + TOP5 ============ -->
+  <section class="dash-grid" aria-label="销售概览">
+    <div class="panel">
+      <div class="panel-title">近30天销售额趋势</div>
+      <div class="panel-sub">按登记日期统计，激活次数 × 单价</div>
+      <div id="trendBox" class="chart-box"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">客户销售额 TOP5</div>
+      <div class="panel-sub">按累计金额排序</div>
+      <div id="topList" class="top-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ 记录表 ============ -->
+  <section class="records-panel" aria-label="销售记录明细">
+    <div class="records-toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+        <input type="text" id="searchInput" placeholder="搜索客户名称或产品…" autocomplete="off">
+      </div>
+      <span class="records-total">合计 <b class="num" id="filterTotal">¥0.00</b></span>
+      <span class="records-count num" id="recordsCount">共 0 笔记录</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <colgroup>
+          <col class="c-date"><col class="c-cust"><col class="c-prod"><col class="c-ver">
+          <col class="c-price"><col class="c-act"><col class="c-amt"><col class="c-ops">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="sortable" id="thDate">登记日期 <span class="sort-arrow num" id="sortArrow">↓</span></th>
+            <th>客户名称</th>
+            <th>产品名称</th>
+            <th>版本</th>
+            <th>单价</th>
+            <th>授权激活次数</th>
+            <th>金额</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 用户反馈 ============ -->
+  <section class="feedback-panel" id="fbSection" aria-label="用户反馈">
+    <div class="feedback-head">
+      <div class="titles">
+        <div class="panel-title">用户反馈</div>
+        <div class="panel-sub">在「销售记录」行的反馈按钮中添加，自动关联客户与产品</div>
+      </div>
+      <div class="feedback-actions">
+        <div class="fb-filters">
+          <button class="chip-btn active" data-f="all" type="button">全部</button>
+          <button class="chip-btn" data-f="pending" type="button">待处理</button>
+          <button class="chip-btn" data-f="done" type="button">已处理</button>
+        </div>
+      </div>
+    </div>
+    <div class="fb-list" id="fbList"></div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.6 2.6"/></svg>
+  数据保存在当前浏览器的本地存储中，更换设备或清除浏览器数据会丢失，建议定期通过「数据管理」导出备份。
+</footer>
+
+<!-- ============ 新增/编辑模态 ============ -->
+<div class="overlay" id="formOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div class="modal-head">
+      <span class="stat-ico amber" style="width:30px;height:30px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <div class="modal-title" id="formTitle">新增销售记录</div>
+      <button class="ico-btn" id="formClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <form id="recordForm" novalidate>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="fCustomer">客户名称 <span class="req">*</span></label>
+            <input type="text" id="fCustomer" placeholder="例：银川星河电子科技有限公司" maxlength="60" autocomplete="off">
+            <span class="err" id="errCustomer"></span>
+          </div>
+          <div class="field">
+            <label for="fDate">登记日期 <span class="req">*</span></label>
+            <input type="date" id="fDate">
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fProduct">产品名称 <span class="req">*</span><button class="field-link" id="btnManageProducts" type="button">管理产品</button></label>
+            <select class="field-sel" id="fProduct"></select>
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fVersion">版本</label>
+            <input type="text" id="fVersion" value="V1.0.1" maxlength="20" autocomplete="off">
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fPrice">单价（元）<span class="req">*</span></label>
+            <input type="number" id="fPrice" step="0.01" min="0" value="19.90">
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fActivations">授权激活次数 <span class="req">*</span></label>
+            <input type="number" id="fActivations" step="1" min="1" value="1">
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fVersion2" style="visibility:hidden">占位</label>
+            <input type="text" style="visibility:hidden" disabled>
+            <span class="err"></span>
+          </div>
+          <div class="amount-preview">
+            <span class="lbl">本笔金额（激活次数 × 单价）</span>
+            <span class="val num" id="amountPreview">¥19.90</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="formCancel" type="button">取消</button>
+        <button class="btn primary" type="submit" id="formSubmit">保存记录</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 产品设置模态 ============ -->
+<div class="overlay" id="prodOverlay">
+  <div class="modal" style="max-width:620px" role="dialog" aria-modal="true" aria-labelledby="prodTitle">
+    <div class="modal-head">
+      <span class="stat-ico" style="width:30px;height:30px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7.1 7.1 0 0 0-.1-1.1l2-1.6-2-3.4-2.4 1a7.1 7.1 0 0 0-1.8-1L14.4 3h-4.8l-.3 2.6a7.1 7.1 0 0 0-1.8 1l-2.4-1-2 3.4 2 1.6a7.1 7.1 0 0 0 0 2.2l-2 1.6 2 3.4 2.4-1a7.1 7.1 0 0 0 1.8 1l.3 2.6h4.8l.3-2.6a7.1 7.1 0 0 0 1.8-1l2.4 1 2-3.4-2-1.6c.1-.3.1-.7.1-1.1z"/></svg>
+      </span>
+      <div class="modal-title" id="prodTitle">产品设置</div>
+      <button class="ico-btn" id="prodClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="prodForm" novalidate>
+        <div class="prod-form">
+          <div class="p-field">
+            <label for="pName">产品名称 <span class="req">*</span></label>
+            <input type="text" id="pName" maxlength="40" placeholder="例：HFSS中文助手" autocomplete="off">
+            <span class="err" id="errPName"></span>
+          </div>
+          <div class="p-field">
+            <label for="pVersion">版本</label>
+            <input type="text" id="pVersion" maxlength="20" placeholder="例：V1.0.1" autocomplete="off">
+            <span class="err"></span>
+          </div>
+          <div class="p-field">
+            <label for="pPrice">单价（元）<span class="req">*</span></label>
+            <input type="number" id="pPrice" step="0.01" min="0" placeholder="19.90">
+            <span class="err" id="errPPrice"></span>
+          </div>
+          <div class="p-field p-submit" style="align-self:end">
+            <button class="btn primary" type="submit" id="prodSubmit">添加产品</button>
+          </div>
+        </div>
+      </form>
+      <div class="prod-list" id="prodList"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="prodDone" type="button">完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 新增反馈模态 ============ -->
+<div class="overlay" id="fbOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+    <div class="modal-head">
+      <span class="stat-ico amber" style="width:30px;height:30px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4v3l4-3h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/><path d="M8 10h8M8 13.5h5"/></svg>
+      </span>
+      <div class="modal-title" id="fbTitle">新增反馈</div>
+      <button class="ico-btn" id="fbClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <form id="fbForm" novalidate>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="fFbSource">反馈来源（客户名称）</label>
+            <input type="text" id="fFbSource" list="customerList" maxlength="60" placeholder="例：银川星河电子科技（选填）" autocomplete="off">
+            <datalist id="customerList"></datalist>
+            <span class="err"></span>
+          </div>
+          <div class="fb-record-info" id="fbRecordInfo" hidden></div>
+          <div class="field">
+            <label for="fFbType">反馈类型 <span class="req">*</span></label>
+            <select class="field-sel" id="fFbType">
+              <option value="问题">问题</option>
+              <option value="建议">建议</option>
+              <option value="功能需求">功能需求</option>
+              <option value="其他">其他</option>
+            </select>
+            <span class="err"></span>
+          </div>
+          <div class="field">
+            <label for="fFbContact">联系方式</label>
+            <input type="text" id="fFbContact" maxlength="60" placeholder="微信 / 电话 / 邮箱（选填）" autocomplete="off">
+            <span class="err"></span>
+          </div>
+          <div class="field full">
+            <label for="fFbContent">反馈内容 <span class="req">*</span></label>
+            <textarea class="field-area" id="fFbContent" maxlength="500" placeholder="请描述客户反馈的问题或建议…"></textarea>
+            <span class="err" id="errFbContent"></span>
+          </div>
+          <div class="field">
+            <label for="fFbDate">登记日期</label>
+            <input type="date" id="fFbDate">
+            <span class="err"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="fbCancel" type="button">取消</button>
+        <button class="btn primary" type="submit">保存反馈</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 数据管理模态 ============ -->
+<div class="overlay" id="dataOverlay">
+  <div class="modal" style="max-width:500px" role="dialog" aria-modal="true" aria-labelledby="dataTitle">
+    <div class="modal-head">
+      <span class="stat-ico" style="width:30px;height:30px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="2.6"/><path d="M4 5.5v6c0 1.4 3.6 2.6 8 2.6s8-1.2 8-2.6v-6"/><path d="M4 11.5v6c0 1.4 3.6 2.6 8 2.6s8-1.2 8-2.6v-6"/></svg>
+      </span>
+      <div class="modal-title" id="dataTitle">数据管理</div>
+      <button class="ico-btn" id="dataClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="data-actions">
+        <div class="data-row">
+          <span class="d-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 9.5h16"/><path d="M8 14.5h5"/></svg>
+          </span>
+          <div class="d-info">
+            <div class="d-title">导出销售明细 CSV</div>
+            <div class="d-desc">生成销售记录表格，可用 Excel 打开查看</div>
+          </div>
+          <button class="btn mini" id="dExportCsv" type="button">导出</button>
+        </div>
+        <div class="data-row">
+          <span class="d-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 19h16"/></svg>
+          </span>
+          <div class="d-info">
+            <div class="d-title">导出数据备份</div>
+            <div class="d-desc">备份全部数据（销售记录、产品配置、用户反馈）为 JSON 文件</div>
+          </div>
+          <button class="btn mini" id="dExportBackup" type="button">导出</button>
+        </div>
+        <div class="data-row">
+          <span class="d-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M4 19h16"/></svg>
+          </span>
+          <div class="d-info">
+            <div class="d-title">导入数据备份</div>
+            <div class="d-desc">从 JSON 备份文件恢复数据，将替换当前全部数据</div>
+          </div>
+          <button class="btn mini" id="dImportBackup" type="button">导入</button>
+          <input type="file" id="dImportFile" accept=".json,application/json" hidden>
+        </div>
+        <div class="data-row danger">
+          <span class="d-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9l1-13"/></svg>
+          </span>
+          <div class="d-info">
+            <div class="d-title">清空销售记录与反馈</div>
+            <div class="d-desc">删除全部销售记录与用户反馈（不可恢复），产品配置保留</div>
+          </div>
+          <button class="btn mini danger" id="dClear" type="button">清空</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="dataDone" type="button">完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 确认模态 ============ -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="max-width:420px" role="alertdialog" aria-modal="true">
+    <div class="modal-head">
+      <span class="stat-ico" style="width:30px;height:30px;background:var(--danger-soft);color:var(--danger)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 8v5M12 16.6v.1"/><path d="M10.3 3.8 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/></svg>
+      </span>
+      <div class="modal-title" id="confirmTitle">确认操作</div>
+      <button class="ico-btn" id="confirmClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg" id="confirmMsg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="confirmCancel" type="button">取消</button>
+      <button class="btn danger-solid" id="confirmOk" type="button">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script>
+/* ================= 数据层 ================= */
+const STORE_KEY = 'antenna-stand-ledger-v1';
+let records = loadRecords();
+let editingId = null;
+let confirmCb = null;
+let sortDesc = true;   // 登记日期排序：默认新到旧
+
+function loadRecords(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveRecords(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(records)); }
+  catch(e){ toast('保存失败：本地存储不可用', 'warn'); }
+}
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+function toLocalDateStr(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + day;
+}
+function todayStr(){ return toLocalDateStr(new Date()); }
+function calcAmount(r){ return Math.round(r.activations * r.unitPrice * 100) / 100; }
+function fmtMoney(n){
+  return '¥' + Number(n).toFixed(2);
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
+}
+const AVATAR_COLORS = ['#0F766E','#B45309','#15803D','#2563EB','#475569','#BE123C','#0E7490','#92400E'];
+function avatarColor(name){
+  let h = 0;
+  for(let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
+/* ================= 统计 ================= */
+function getStats(){
+  const totalAmount = records.reduce((s, r) => s + calcAmount(r), 0);
+  const totalActivations = records.reduce((s, r) => s + r.activations, 0);
+  const customers = new Set(records.map(r => r.customer.trim())).size;
+  const today = todayStr();
+  const todayAmount = records.filter(r => r.date === today).reduce((s, r) => s + calcAmount(r), 0);
+  const daysAgo30 = new Date(); daysAgo30.setDate(daysAgo30.getDate() - 29);
+  const k30 = toLocalDateStr(daysAgo30);
+  const d30Amount = records.filter(r => r.date >= k30 && r.date <= today).reduce((s, r) => s + calcAmount(r), 0);
+  return { totalAmount, totalActivations, customers, count: records.length, todayAmount, d30Amount };
+}
+function renderStats(){
+  const s = getStats();
+  document.getElementById('statAmount').textContent = fmtMoney(s.totalAmount);
+  document.getElementById('statAmountSub').textContent =
+    '近30天 ' + fmtMoney(s.d30Amount) + ' · 今日 ' + fmtMoney(s.todayAmount);
+  document.getElementById('statCustomers').textContent = s.customers;
+  document.getElementById('statActivations').textContent = s.totalActivations;
+  document.getElementById('statRecords').textContent = s.count;
+  document.getElementById('statRecords').parentElement.querySelector('.stat-sub').textContent =
+    '共 ' + s.count + ' 笔销售';
+}
+
+/* ================= 记录表 ================= */
+let query = '';
+function filtered(){
+  const q = query.trim().toLowerCase();
+  const list = q ? records.filter(r =>
+    r.customer.toLowerCase().includes(q) || r.product.toLowerCase().includes(q)
+  ) : records.slice();
+  list.sort((a, b) => {
+    const d = a.date === b.date ? (a.createdAt - b.createdAt) : (a.date < b.date ? -1 : 1);
+    return sortDesc ? -d : d;
+  });
+  return list;
+}
+function rowHTML(r){
+  const amt = calcAmount(r);
+  const color = avatarColor(r.customer);
+  const fbCnt = feedback.filter(x => x.recordId === r.id).length;
+  return '<tr>' +
+    '<td class="c-date num">' + esc(r.date) + '</td>' +
+    '<td class="c-cust" title="' + esc(r.customer) + '">' +
+      '<span style="display:inline-flex;align-items:center;gap:7px">' +
+        '<span style="width:22px;height:22px;border-radius:50%;background:' + color + ';color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none">' + esc(r.customer.charAt(0)) + '</span>' +
+        esc(r.customer) +
+      '</span></td>' +
+    '<td class="c-prod" title="' + esc(r.product) + '">' + esc(r.product) + '</td>' +
+    '<td class="c-ver">' + esc(r.version || '—') + '</td>' +
+    '<td class="c-price num">' + Number(r.unitPrice).toFixed(2) + '</td>' +
+    '<td class="c-act"><span class="chip">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 4.5 13.6H11L9.5 22 18 9.8h-6.4L13 2z"/></svg>' +
+      '<span class="num">' + r.activations + ' 次</span></span></td>' +
+    '<td class="c-amt num">' + fmtMoney(amt) + '</td>' +
+    '<td class="c-ops">' +
+      '<button class="ico-btn fb' + (fbCnt > 0 ? ' has' : '') + '" data-act="fb" data-id="' + r.id + '" title="' + (fbCnt > 0 ? '添加反馈（已有 ' + fbCnt + ' 条）' : '添加反馈') + '" aria-label="添加反馈">' +
+        ICON_FB + (fbCnt > 0 ? '<span class="fb-cnt num">' + fbCnt + '</span>' : '') + '</button>' +
+      '<button class="ico-btn" data-act="edit" data-id="' + r.id + '" title="编辑" aria-label="编辑">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.8a2.1 2.1 0 0 1 3 3L8 18.4l-4 1 1-4L16.5 3.8z"/></svg></button>' +
+      '<button class="ico-btn del" data-act="del" data-id="' + r.id + '" title="删除" aria-label="删除">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9l1-13"/></svg></button>' +
+    '</td>' +
+  '</tr>';
+}
+function renderTable(){
+  const list = filtered();
+  const tb = document.getElementById('tbody');
+  const total = list.reduce((s, r) => s + calcAmount(r), 0);
+  document.getElementById('filterTotal').textContent = fmtMoney(total);
+  document.getElementById('recordsCount').textContent = '共 ' + list.length + ' 笔记录';
+  if(list.length === 0){
+    const empty = records.length === 0
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8.4 8.4a5.1 5.1 0 0 0 0 7.2"/><path d="M15.6 8.4a5.1 5.1 0 0 1 0 7.2"/><path d="M5.4 5.4a9.3 9.3 0 0 0 0 13.2"/><path d="M18.6 5.4a9.3 9.3 0 0 1 0 13.2"/><circle cx="12" cy="12" r="2.3" fill="currentColor" stroke="none"/></svg>' +
+          '<span class="t1">还没有销售记录</span>' +
+          '<span class="t2">点击右上角「新增记录」，录入客户名称与激活次数即可开始记账</span>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/><path d="M8.5 11h5"/></svg>' +
+          '<span class="t1">没有匹配「' + esc(query) + '」的记录</span>' +
+          '<span class="t2">换个关键词试试，或清空搜索框查看全部</span>';
+    tb.innerHTML = '<tr class="empty-row"><td colspan="8"><div class="empty-inline">' + empty + '</div></td></tr>';
+  }else{
+    tb.innerHTML = list.map(rowHTML).join('');
+  }
+}
+
+/* ================= 客户 TOP5 ================= */
+function renderTop(){
+  const box = document.getElementById('topList');
+  const map = new Map();
+  records.forEach(r => {
+    const key = r.customer.trim();
+    if(!key) return;
+    const cur = map.get(key) || {name: key, amount: 0, activations: 0};
+    cur.amount += calcAmount(r);
+    cur.activations += r.activations;
+    map.set(key, cur);
+  });
+  const top = Array.from(map.values()).sort((a, b) => b.amount - a.amount).slice(0, 5);
+  if(top.length === 0){
+    box.innerHTML = '<div class="top-empty">暂无数据，录入销售记录后自动统计</div>';
+    return;
+  }
+  const max = top[0].amount || 1;
+  box.innerHTML = top.map((t, i) =>
+    '<div class="top-item">' +
+      '<div class="top-row">' +
+        '<span class="top-rank num">' + (i + 1) + '</span>' +
+        '<span class="top-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>' +
+        '<span class="top-amt num">' + fmtMoney(t.amount) + '</span>' +
+      '</div>' +
+      '<div class="top-meta num">激活 ' + t.activations + ' 次</div>' +
+      '<div class="top-bar"><i style="width:' + Math.max(3, Math.round(t.amount / max * 100)) + '%"></i></div>' +
+    '</div>'
+  ).join('');
+}
+
+/* ================= 趋势图（ECharts，加载失败自动降级为 CSS 柱状） ================= */
+let trendChart = null;
+function buildTrendData(){
+  const today = new Date();
+  const days = [];
+  for(let i = 29; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(toLocalDateStr(d));
+  }
+  const sum = {};
+  records.forEach(r => { if(sum[r.date] === undefined) sum[r.date] = 0; sum[r.date] += calcAmount(r); });
+  return days.map(date => ({ date, amount: sum[date] || 0 }));
+}
+function renderTrend(){
+  const box = document.getElementById('trendBox');
+  const data = buildTrendData();
+  const hasData = data.some(d => d.amount > 0);
+  if(!hasData){
+    box.innerHTML = '<div class="chart-empty">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 18v-4M10 18V8M16 18v-7M22 18v-2"/><path d="M2 20h20"/></svg>' +
+      '近30天暂无销售数据</div>';
+    return;
+  }
+  if(window.echarts){
+    if(!trendChart){
+      trendChart = echarts.init(box);
+      window.addEventListener('resize', () => trendChart && trendChart.resize());
+    }
+    const today = todayStr();
+    trendChart.setOption({
+      grid: { left: 8, right: 8, top: 22, bottom: 4, containLabel: true },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: p => p[0].name + '<br>销售额 ' + fmtMoney(p[0].value)
+      },
+      xAxis: {
+        type: 'category',
+        data: data.map(d => d.date.slice(5)),
+        axisLine: { lineStyle: { color: '#DCE5E0' } },
+        axisTick: { show: false },
+        axisLabel: {
+          color: '#8CA09A', fontSize: 11,
+          interval: i => i % 5 === 0 || i === data.length - 1
+        }
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: { lineStyle: { color: '#EDF1ED' } },
+        axisLabel: { color: '#8CA09A', fontSize: 11, formatter: v => v >= 1000 ? (v/1000) + 'k' : v }
+      },
+      series: [{
+        type: 'bar',
+        data: data.map(d => ({
+          value: Math.round(d.amount * 100) / 100,
+          itemStyle: {
+            color: d.date === today ? '#C97E10' : '#0F766E',
+            borderRadius: [4, 4, 0, 0]
+          }
+        })),
+        barMaxWidth: 26
+      }]
+    });
+  }else{
+    const max = Math.max.apply(null, data.map(d => d.amount)) || 1;
+    box.innerHTML =
+      '<div class="bars">' + data.map(d =>
+        '<div class="bar' + (d.date === todayStr() ? ' today' : '') + '" style="height:' +
+        Math.max(2, Math.round(d.amount / max * 100)) + '%" title="' + d.date + '：' + fmtMoney(d.amount) + '"></div>'
+      ).join('') + '</div>' +
+      '<div class="bars-label">' + data.map((d, i) =>
+        (i % 5 === 0 || i === data.length - 1) ? '<span>' + d.date.slice(5) + '</span>' : '<span></span>'
+      ).join('') + '</div>';
+  }
+}
+
+/* ================= 统一刷新 ================= */
+function refreshAll(){
+  renderStats();
+  renderTable();
+  renderTop();
+  renderTrend();
+  renderCustomerList();
+}
+
+</script>
+<script>
+/* ================= Toast ================= */
+function toast(msg, type){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || 'ok');
+  const icon = type === 'warn'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16.6v.1"/><path d="M10.3 3.8 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></svg>';
+  el.innerHTML = icon + '<span>' + esc(msg) + '</span>';
+  wrap.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 260);
+  }, 2600);
+}
+
+/* ================= 模态控制 ================= */
+function openOverlay(id){
+  document.getElementById(id).classList.add('open');
+}
+function closeOverlay(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+/* —— 新增 / 编辑表单 —— */
+function openAdd(){
+  editingId = null;
+  document.getElementById('formTitle').textContent = '新增销售记录';
+  document.getElementById('formSubmit').textContent = '保存记录';
+  document.getElementById('fCustomer').value = '';
+  document.getElementById('fDate').value = todayStr();
+  renderProductOptions();
+  if(products.length){
+    document.getElementById('fProduct').value = products[0].name;
+    applyProductByName(products[0].name);
+  }
+  document.getElementById('fActivations').value = '1';
+  clearErrors();
+  updateAmountPreview();
+  openOverlay('formOverlay');
+  setTimeout(() => document.getElementById('fCustomer').focus(), 80);
+}
+function openEdit(id){
+  const r = records.find(x => x.id === id);
+  if(!r) return;
+  editingId = id;
+  document.getElementById('formTitle').textContent = '编辑销售记录';
+  document.getElementById('formSubmit').textContent = '保存修改';
+  document.getElementById('fCustomer').value = r.customer;
+  document.getElementById('fDate').value = r.date;
+  renderProductOptions();
+  if(!products.some(p => p.name === r.product)){
+    document.getElementById('fProduct').insertAdjacentHTML('beforeend',
+      '<option value="' + esc(r.product) + '">' + esc(r.product) + '（未配置）</option>');
+  }
+  document.getElementById('fProduct').value = r.product;
+  document.getElementById('fVersion').value = r.version || '';
+  document.getElementById('fPrice').value = r.unitPrice;
+  document.getElementById('fActivations').value = r.activations;
+  clearErrors();
+  updateAmountPreview();
+  openOverlay('formOverlay');
+  setTimeout(() => document.getElementById('fCustomer').focus(), 80);
+}
+function clearErrors(){
+  document.querySelectorAll('#recordForm .err').forEach(e => e.textContent = '');
+}
+function updateAmountPreview(){
+  const price = parseFloat(document.getElementById('fPrice').value);
+  const act = parseInt(document.getElementById('fActivations').value, 10);
+  const amt = (!isNaN(price) && price >= 0 && !isNaN(act) && act > 0) ? price * act : 0;
+  document.getElementById('amountPreview').textContent = fmtMoney(amt);
+}
+
+/* —— 通用确认框 —— */
+function confirmAction(title, msg, cb, okLabel){
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').innerHTML = msg;
+  document.getElementById('confirmOk').textContent = okLabel || '确认';
+  confirmCb = cb;
+  openOverlay('confirmOverlay');
+}
+
+/* ================= 导出 CSV ================= */
+function exportCSV(){
+  if(records.length === 0){
+    toast('暂无可导出的记录', 'warn');
+    return;
+  }
+  const head = ['登记日期','客户名称','产品名称','版本','单价','授权激活次数','金额'];
+  const rows = records.slice().sort((a, b) => a.date === b.date ? (a.createdAt - b.createdAt) : (a.date < b.date ? -1 : 1))
+    .map(r => [r.date, r.customer, r.product, r.version || '', r.unitPrice, r.activations, calcAmount(r).toFixed(2)]);
+  const csvStr = '\uFEFF' + [head].concat(rows).map(row =>
+    row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')
+  ).join('\r\n');
+  const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  a.download = '天线小栈销售记录_' +
+    d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast('已导出 ' + records.length + ' 笔记录');
+}
+
+/* ================= 事件绑定 ================= */
+function bindEvents(){
+  document.getElementById('btnAdd').addEventListener('click', openAdd);
+  document.getElementById('btnExport').addEventListener('click', exportCSV);
+
+  /* 表单 */
+  document.getElementById('formClose').addEventListener('click', () => closeOverlay('formOverlay'));
+  document.getElementById('formCancel').addEventListener('click', () => closeOverlay('formOverlay'));
+  document.getElementById('formOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeOverlay('formOverlay');
+  });
+  document.getElementById('fPrice').addEventListener('input', updateAmountPreview);
+  document.getElementById('fActivations').addEventListener('input', updateAmountPreview);
+  document.getElementById('recordForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const customer = document.getElementById('fCustomer').value.trim();
+    const date = document.getElementById('fDate').value;
+    const product = document.getElementById('fProduct').value.trim();
+    const version = document.getElementById('fVersion').value.trim();
+    const price = parseFloat(document.getElementById('fPrice').value);
+    const act = parseInt(document.getElementById('fActivations').value, 10);
+    let ok = true;
+    const errC = document.getElementById('errCustomer');
+    errC.textContent = '';
+    if(!customer){ errC.textContent = '请填写客户名称'; ok = false; }
+    if(!product){ document.getElementById('fProduct').parentElement.querySelector('.err').textContent = '请选择产品名称'; ok = false; }
+    if(!date){ document.getElementById('fDate').parentElement.querySelector('.err').textContent = '请选择登记日期'; ok = false; }
+    if(isNaN(price) || price < 0){
+      document.getElementById('fPrice').parentElement.querySelector('.err').textContent = '单价需为不小于 0 的数字';
+      ok = false;
+    }
+    if(isNaN(act) || act < 1 || !Number.isInteger(act)){
+      document.getElementById('fActivations').parentElement.querySelector('.err').textContent = '激活次数需为不小于 1 的整数';
+      ok = false;
+    }
+    if(!ok) return;
+    const record = {
+      id: editingId || uid(),
+      customer, date, product, version,
+      unitPrice: Math.round(price * 100) / 100,
+      activations: act,
+      createdAt: editingId
+        ? (records.find(x => x.id === editingId) || {}).createdAt
+        : Date.now()
+    };
+    if(editingId){
+      const idx = records.findIndex(x => x.id === editingId);
+      records[idx] = record;
+      toast('已保存修改');
+    }else{
+      records.push(record);
+      toast('已新增 1 笔记录');
+    }
+    saveRecords();
+    closeOverlay('formOverlay');
+    refreshAll();
+  });
+
+  /* 确认框 */
+  document.getElementById('confirmClose').addEventListener('click', () => closeOverlay('confirmOverlay'));
+  document.getElementById('confirmCancel').addEventListener('click', () => closeOverlay('confirmOverlay'));
+  document.getElementById('confirmOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeOverlay('confirmOverlay');
+  });
+  document.getElementById('confirmOk').addEventListener('click', () => {
+    closeOverlay('confirmOverlay');
+    if(typeof confirmCb === 'function'){ const cb = confirmCb; confirmCb = null; cb(); }
+  });
+
+  /* 搜索 */
+  let searchTimer = null;
+  document.getElementById('searchInput').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { query = e.target.value; renderTable(); }, 180);
+  });
+
+  /* 表格排序 + 行操作（事件委托） */
+  document.getElementById('thDate').addEventListener('click', () => {
+    sortDesc = !sortDesc;
+    document.getElementById('sortArrow').textContent = sortDesc ? '↓' : '↑';
+    renderTable();
+  });
+  document.getElementById('tbody').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.act === 'edit'){ openEdit(id); }
+    else if(btn.dataset.act === 'fb'){
+      const r = records.find(x => x.id === id);
+      if(r) openFeedback(r);
+    }
+    else if(btn.dataset.act === 'del'){
+      const r = records.find(x => x.id === id);
+      if(!r) return;
+      confirmAction('删除记录',
+        '确定删除 <b>' + esc(r.customer) + '</b> 在 <b>' + esc(r.date) + '</b> 的这笔记录吗？删除后不可恢复。',
+        () => {
+          records = records.filter(x => x.id !== id);
+          saveRecords();
+          refreshAll();
+          toast('已删除该记录');
+        },
+        '删除');
+    }
+  });
+
+  /* 键盘：Esc 关闭模态 */
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){
+      closeOverlay('formOverlay');
+      closeOverlay('confirmOverlay');
+    }
+  });
+}
+
+/* ================= 图标 ================= */
+const ICON_PENCIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.8a2.1 2.1 0 0 1 3 3L8 18.4l-4 1 1-4L16.5 3.8z"/></svg>';
+const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13a1 1 0 0 0 1 .9h8a1 1 0 0 0 1-.9l1-13"/></svg>';
+const ICON_FB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4v3l4-3h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/><path d="M8 10h8M8 13.5h5"/></svg>';
+
+/* ================= 产品配置 ================= */
+const STORE_KEY_PRODUCTS = 'antenna-stand-products-v1';
+let products = [];
+let prodEditId = null;
+function loadProducts(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY_PRODUCTS);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveProducts(){
+  try{ localStorage.setItem(STORE_KEY_PRODUCTS, JSON.stringify(products)); }
+  catch(e){ toast('产品设置保存失败', 'warn'); }
+}
+function seedProducts(){
+  if(products.length === 0){
+    products.push({ id: uid(), name: 'HFSS中文助手', version: 'V1.0.1', price: 19.9 });
+    saveProducts();
+  }
+}
+function renderProductChip(){
+  const p = products[0];
+  document.getElementById('prodChipText').textContent = p
+    ? p.name + ' · ' + (p.version || '—') + ' · ¥' + Number(p.price).toFixed(2)
+    : '未配置产品';
+  document.getElementById('prodChip').title = '已配置 ' + products.length + ' 款产品，点击管理';
+}
+function renderProductOptions(){
+  document.getElementById('fProduct').innerHTML = products.map(p =>
+    '<option value="' + esc(p.name) + '">' + esc(p.name) + ' · ' + esc(p.version || '—') + ' · ¥' + Number(p.price).toFixed(2) + '</option>'
+  ).join('');
+}
+function applyProductByName(name){
+  const p = products.find(x => x.name === name);
+  if(p){
+    document.getElementById('fVersion').value = p.version || '';
+    document.getElementById('fPrice').value = p.price;
+    updateAmountPreview();
+  }
+}
+function renderProdList(){
+  const box = document.getElementById('prodList');
+  if(!products.length){
+    box.innerHTML = '<div class="prod-empty">暂无产品，请在上方添加</div>';
+    return;
+  }
+  box.innerHTML = products.map(p =>
+    '<div class="prod-item">' +
+      '<span class="p-name" title="' + esc(p.name) + '">' + esc(p.name) + '</span>' +
+      '<span class="p-ver">' + esc(p.version || '—') + '</span>' +
+      '<span class="p-price num">¥' + Number(p.price).toFixed(2) + '</span>' +
+      '<span class="p-ops">' +
+        '<button class="ico-btn" data-act="pedit" data-id="' + p.id + '" title="编辑" aria-label="编辑产品">' + ICON_PENCIL + '</button>' +
+        '<button class="ico-btn del" data-act="pdel" data-id="' + p.id + '" title="删除" aria-label="删除产品">' + ICON_TRASH + '</button>' +
+      '</span>' +
+    '</div>'
+  ).join('');
+}
+
+/* ================= 用户反馈 ================= */
+const STORE_KEY_FEEDBACK = 'antenna-stand-feedback-v1';
+const FB_TYPE_COLORS = {
+  '问题': ['#FBEAEA', '#B33737'],
+  '建议': ['#FBF0DC', '#9A6410'],
+  '功能需求': ['#E7F0FB', '#1D5FA8'],
+  '其他': ['#EEF1EF', '#5A6A64']
+};
+let feedback = [];
+let fbFilter = 'all';
+let fbRecordId = null;
+let fbRecordLabel = '';
+function loadFeedback(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY_FEEDBACK);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveFeedback(){
+  try{ localStorage.setItem(STORE_KEY_FEEDBACK, JSON.stringify(feedback)); }
+  catch(e){ toast('反馈保存失败', 'warn'); }
+}
+function renderCustomerList(){
+  const names = [...new Set(records.map(r => r.customer.trim()).filter(Boolean))];
+  document.getElementById('customerList').innerHTML = names.map(n => '<option value="' + esc(n) + '"></option>').join('');
+}
+function renderFeedback(){
+  let list = feedback.slice();
+  if(fbFilter !== 'all') list = list.filter(f => f.status === fbFilter);
+  list.sort((a, b) => a.date === b.date ? (b.createdAt - a.createdAt) : (a.date < b.date ? 1 : -1));
+  const box = document.getElementById('fbList');
+  if(!list.length){
+    box.innerHTML = '<div class="fb-empty">' + ICON_FB +
+      '<span>' + (feedback.length === 0 ? '还没有反馈记录，在「销售记录」行的反馈按钮中添加' : '该状态下暂无反馈') + '</span></div>';
+  }else{
+    box.innerHTML = list.map(fbCardHTML).join('');
+  }
+  const pending = feedback.filter(f => f.status === 'pending').length;
+  const badge = document.getElementById('fbBadge');
+  badge.textContent = pending;
+  badge.hidden = pending === 0;
+}
+function fbCardHTML(f){
+  const c = FB_TYPE_COLORS[f.type] || FB_TYPE_COLORS['其他'];
+  const done = f.status === 'done';
+  const metas = [];
+  if(f.recordLabel) metas.push('关联购买记录：' + esc(f.recordLabel) + '（' + esc(f.date) + '）');
+  if(f.contact) metas.push('联系方式：' + esc(f.contact));
+  return '<div class="fb-card' + (done ? ' done' : '') + '">' +
+    '<div class="fb-main">' +
+      '<div class="fb-top">' +
+        '<span class="fb-type" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(f.type) + '</span>' +
+        '<span class="fb-source">' + (f.source ? esc(f.source) : '匿名反馈') + '</span>' +
+        '<span class="fb-date num">' + esc(f.date) + '</span>' +
+      '</div>' +
+      '<div class="fb-content">' + esc(f.content) + '</div>' +
+      metas.map(m => '<div class="fb-meta">' + m + '</div>').join('') +
+    '</div>' +
+    '<div class="fb-ops">' +
+      '<span class="fb-status ' + (done ? 'done' : 'pending') + '">' + (done ? '已处理' : '待处理') + '</span>' +
+      '<button class="btn mini" data-act="fbtoggle" data-id="' + f.id + '" type="button">' + (done ? '恢复待处理' : '标记已处理') + '</button>' +
+      '<button class="ico-btn del" data-act="fbdel" data-id="' + f.id + '" type="button" title="删除" aria-label="删除反馈">' + ICON_TRASH + '</button>' +
+    '</div>' +
+  '</div>';
+}
+function openFeedback(record){
+  const src = document.getElementById('fFbSource');
+  const info = document.getElementById('fbRecordInfo');
+  document.getElementById('fFbType').value = '问题';
+  document.getElementById('fFbContact').value = '';
+  document.getElementById('fFbContent').value = '';
+  document.getElementById('errFbContent').textContent = '';
+  if(record){
+    fbRecordId = record.id;
+    fbRecordLabel = record.product + (record.version ? ' · ' + record.version : '');
+    src.value = record.customer;
+    document.getElementById('fFbDate').value = record.date;
+    info.textContent = '关联购买记录：' + fbRecordLabel + '（' + record.customer + ' · ' + record.date + ' · ¥' + Number(record.unitPrice).toFixed(2) + '）';
+    info.hidden = false;
+  }else{
+    fbRecordId = null;
+    fbRecordLabel = '';
+    src.value = '';
+    document.getElementById('fFbDate').value = todayStr();
+    info.hidden = true;
+  }
+  openOverlay('fbOverlay');
+  setTimeout(() => document.getElementById('fFbContent').focus(), 80);
+}
+function openProducts(){
+  prodEditId = null;
+  document.getElementById('prodSubmit').textContent = '添加产品';
+  document.getElementById('pName').value = '';
+  document.getElementById('pVersion').value = '';
+  document.getElementById('pPrice').value = '';
+  document.getElementById('errPName').textContent = '';
+  document.getElementById('errPPrice').textContent = '';
+  renderProdList();
+  openOverlay('prodOverlay');
+  setTimeout(() => document.getElementById('pName').focus(), 80);
+}
+
+/* ================= 新功能事件 ================= */
+function bindNewEvents(){
+  /* 产品设置 */
+  document.getElementById('prodChip').addEventListener('click', openProducts);
+  document.getElementById('btnManageProducts').addEventListener('click', openProducts);
+  document.getElementById('prodClose').addEventListener('click', () => closeOverlay('prodOverlay'));
+  document.getElementById('prodDone').addEventListener('click', () => closeOverlay('prodOverlay'));
+  document.getElementById('prodOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeOverlay('prodOverlay');
+  });
+  document.getElementById('prodForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('pName').value.trim();
+    const version = document.getElementById('pVersion').value.trim();
+    const price = parseFloat(document.getElementById('pPrice').value);
+    const errName = document.getElementById('errPName');
+    const errPrice = document.getElementById('errPPrice');
+    errName.textContent = '';
+    errPrice.textContent = '';
+    let ok = true;
+    if(!name){ errName.textContent = '请填写产品名称'; ok = false; }
+    else if(products.some(p => p.name === name && p.id !== prodEditId)){ errName.textContent = '产品名称已存在'; ok = false; }
+    if(isNaN(price) || price < 0){ errPrice.textContent = '单价需为不小于 0 的数字'; ok = false; }
+    if(!ok) return;
+    const rounded = Math.round(price * 100) / 100;
+    if(prodEditId){
+      const p = products.find(x => x.id === prodEditId);
+      if(p){ p.name = name; p.version = version; p.price = rounded; }
+      toast('已保存产品修改');
+    }else{
+      products.push({ id: uid(), name, version, price: rounded });
+      toast('已添加产品：' + name);
+    }
+    prodEditId = null;
+    document.getElementById('prodSubmit').textContent = '添加产品';
+    document.getElementById('pName').value = '';
+    document.getElementById('pVersion').value = '';
+    document.getElementById('pPrice').value = '';
+    saveProducts();
+    renderProdList();
+    renderProductOptions();
+    renderProductChip();
+  });
+  document.getElementById('prodList').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.act === 'pedit'){
+      const p = products.find(x => x.id === id);
+      if(!p) return;
+      prodEditId = id;
+      document.getElementById('pName').value = p.name;
+      document.getElementById('pVersion').value = p.version || '';
+      document.getElementById('pPrice').value = p.price;
+      document.getElementById('errPName').textContent = '';
+      document.getElementById('errPPrice').textContent = '';
+      document.getElementById('prodSubmit').textContent = '保存修改';
+      document.getElementById('pName').focus();
+    }else if(btn.dataset.act === 'pdel'){
+      if(products.length <= 1){ toast('至少保留一款产品，如需调整请使用「编辑」', 'warn'); return; }
+      const p = products.find(x => x.id === id);
+      if(!p) return;
+      confirmAction('删除产品', '确定删除产品 <b>' + esc(p.name) + '</b> 吗？已产生的销售记录不会受影响。',
+        () => {
+          products = products.filter(x => x.id !== id);
+          saveProducts();
+          renderProdList();
+          renderProductOptions();
+          renderProductChip();
+          toast('已删除产品');
+        }, '删除');
+    }
+  });
+
+  /* 记录表单：选择产品自动带出版本与单价 */
+  document.getElementById('fProduct').addEventListener('change', e => {
+    applyProductByName(e.target.value);
+  });
+
+  /* 反馈 */
+  document.getElementById('btnFeedback').addEventListener('click', () => {
+    document.getElementById('fbSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('fbClose').addEventListener('click', () => closeOverlay('fbOverlay'));
+  document.getElementById('fbCancel').addEventListener('click', () => closeOverlay('fbOverlay'));
+  document.getElementById('fbOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeOverlay('fbOverlay');
+  });
+  document.querySelectorAll('.fb-filters .chip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      fbFilter = btn.dataset.f;
+      document.querySelectorAll('.fb-filters .chip-btn').forEach(b => b.classList.toggle('active', b === btn));
+      renderFeedback();
+    });
+  });
+  document.getElementById('fbForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const source = document.getElementById('fFbSource').value.trim();
+    const type = document.getElementById('fFbType').value;
+    const contact = document.getElementById('fFbContact').value.trim();
+    const content = document.getElementById('fFbContent').value.trim();
+    const date = document.getElementById('fFbDate').value || todayStr();
+    const err = document.getElementById('errFbContent');
+    err.textContent = '';
+    if(!content){ err.textContent = '请填写反馈内容'; return; }
+    feedback.push({ id: uid(), source, type, contact, content, date, status: 'pending', createdAt: Date.now(), recordId: fbRecordId, recordLabel: fbRecordLabel });
+    saveFeedback();
+    closeOverlay('fbOverlay');
+    document.getElementById('fFbSource').value = '';
+    document.getElementById('fFbContact').value = '';
+    document.getElementById('fFbContent').value = '';
+    document.getElementById('fbRecordInfo').hidden = true;
+    renderFeedback();
+    refreshAll();
+    toast('已新增反馈');
+  });
+  document.getElementById('fbList').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.act === 'fbtoggle'){
+      const f = feedback.find(x => x.id === id);
+      if(!f) return;
+      f.status = f.status === 'pending' ? 'done' : 'pending';
+      saveFeedback();
+      renderFeedback();
+      toast(f.status === 'done' ? '已标记为已处理' : '已恢复为待处理');
+    }else if(btn.dataset.act === 'fbdel'){
+      const f = feedback.find(x => x.id === id);
+      if(!f) return;
+      confirmAction('删除反馈', '确定删除这条反馈记录吗？删除后不可恢复。',
+        () => {
+          feedback = feedback.filter(x => x.id !== id);
+          saveFeedback();
+          renderFeedback();
+          toast('已删除反馈');
+        }, '删除');
+    }
+  });
+
+  /* 数据管理 */
+  document.getElementById('btnData').addEventListener('click', () => openOverlay('dataOverlay'));
+  document.getElementById('dataClose').addEventListener('click', () => closeOverlay('dataOverlay'));
+  document.getElementById('dataDone').addEventListener('click', () => closeOverlay('dataOverlay'));
+  document.getElementById('dataOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeOverlay('dataOverlay');
+  });
+  document.getElementById('dExportCsv').addEventListener('click', () => { closeOverlay('dataOverlay'); exportCSV(); });
+  document.getElementById('dExportBackup').addEventListener('click', () => { closeOverlay('dataOverlay'); exportBackup(); });
+  document.getElementById('dImportBackup').addEventListener('click', () => {
+    document.getElementById('dImportFile').click();
+  });
+  document.getElementById('dImportFile').addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    if(file){ closeOverlay('dataOverlay'); importBackup(file); }
+    e.target.value = '';
+  });
+  document.getElementById('dClear').addEventListener('click', () => { closeOverlay('dataOverlay'); clearAllData(); });
+}
+
+/* ================= 数据备份 ================= */
+function exportBackup(){
+  const data = {
+    app: 'antenna-stand-ledger',
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    products,
+    records,
+    feedback
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  a.download = '天线小栈数据备份_' +
+    d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') + '_' +
+    String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0') + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast('已导出备份：' + records.length + ' 笔记录、' + products.length + ' 款产品、' + feedback.length + ' 条反馈');
+}
+function importBackup(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try{ data = JSON.parse(reader.result); }
+    catch(e){ toast('备份文件解析失败，请确认文件完整', 'warn'); return; }
+    if(!data || !Array.isArray(data.records) || !Array.isArray(data.products) || !Array.isArray(data.feedback)){
+      toast('备份文件格式不正确', 'warn');
+      return;
+    }
+    const r = data.records.length, p = data.products.length, f = data.feedback.length;
+    confirmAction('导入数据备份',
+      '将导入 <b>' + r + '</b> 笔销售记录、<b>' + p + '</b> 款产品、<b>' + f + '</b> 条反馈，并<b>替换</b>当前全部数据。确定继续吗？',
+      () => {
+        records = data.records
+          .filter(x => x && x.customer && x.date)
+          .map(x => ({
+            id: x.id || uid(),
+            customer: String(x.customer),
+            date: String(x.date),
+            product: String(x.product || ''),
+            version: x.version ? String(x.version) : '',
+            unitPrice: Number(x.unitPrice) || 0,
+            activations: Math.max(1, Math.floor(Number(x.activations) || 1)),
+            createdAt: x.createdAt || Date.now()
+          }));
+        products = data.products
+          .filter(x => x && x.name)
+          .map(x => ({
+            id: x.id || uid(),
+            name: String(x.name),
+            version: x.version ? String(x.version) : '',
+            price: Number(x.price) || 0
+          }));
+        feedback = data.feedback
+          .filter(x => x && x.content)
+          .map(x => ({
+            id: x.id || uid(),
+            source: x.source ? String(x.source) : '',
+            type: FB_TYPE_COLORS[x.type] ? x.type : '其他',
+            contact: x.contact ? String(x.contact) : '',
+            content: String(x.content),
+            date: x.date || todayStr(),
+            status: x.status === 'done' ? 'done' : 'pending',
+            createdAt: x.createdAt || Date.now(),
+            recordId: x.recordId || null,
+            recordLabel: x.recordLabel ? String(x.recordLabel) : ''
+          }));
+        saveRecords();
+        saveProducts();
+        saveFeedback();
+        seedProducts();
+        renderProductChip();
+        renderProductOptions();
+        renderFeedback();
+        refreshAll();
+        toast('已成功导入备份');
+      }, '导入');
+  };
+  reader.readAsText(file, 'utf-8');
+}
+function clearAllData(){
+  const r = records.length, f = feedback.length;
+  if(r === 0 && f === 0){ toast('当前没有可清空的数据', 'warn'); return; }
+  confirmAction('清空销售记录与反馈',
+    '将删除全部 <b>' + r + '</b> 笔销售记录与 <b>' + f + '</b> 条反馈，此操作不可恢复。建议先「导出数据备份」。',
+    () => {
+      records = [];
+      feedback = [];
+      saveRecords();
+      saveFeedback();
+      refreshAll();
+      renderFeedback();
+      toast('已清空销售记录与反馈');
+    }, '清空全部');
+}
+
+/* ================= 初始化 ================= */
+function init(){
+  products = loadProducts();
+  feedback = loadFeedback();
+  seedProducts();
+  bindEvents();
+  bindNewEvents();
+  document.getElementById('fDate').max = todayStr();
+  document.getElementById('fFbDate').max = todayStr();
+  renderProductChip();
+  renderProductOptions();
+  renderFeedback();
+  refreshAll();
+}
+/* ================= 登录鉴权 ================= */
+const AUTH_USER = 'admin';
+const AUTH_PASS_HASH = 0x92d062c4; /* djb2('Admin@123') 散列，不在源码留明文 */
+const AUTH_KEY = 'antenna-stand-auth';
+function authHash(s){let h=5381;for(let i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h;}
+const loginMask = document.getElementById('loginMask');
+const loginForm = document.getElementById('loginForm');
+const loginCard = document.getElementById('loginCard');
+let authFails = 0, authLockUntil = 0;
+function showLogin(){
+  loginMask.classList.remove('hidden');
+  document.body.classList.add('locked');
+  setTimeout(function(){
+    const u = document.getElementById('loginUser');
+    (u.value ? document.getElementById('loginPass') : u).focus();
+  }, 80);
+}
+function hideLogin(){
+  loginMask.classList.add('hidden');
+  document.body.classList.remove('locked');
+}
+loginForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  const now = Date.now();
+  const errBox = document.getElementById('loginErr');
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if(now < authLockUntil){
+    errBox.textContent = '尝试次数过多，请 ' + Math.ceil((authLockUntil - now)/1000) + ' 秒后重试';
+    errBox.hidden = false;
+    return;
+  }
+  if(u === AUTH_USER && authHash(p) === AUTH_PASS_HASH){
+    sessionStorage.setItem(AUTH_KEY, '1');
+    authFails = 0;
+    errBox.hidden = true;
+    hideLogin();
+    toast('登录成功，欢迎回来');
+  } else {
+    authFails++;
+    loginCard.classList.remove('shake');
+    void loginCard.offsetWidth;
+    loginCard.classList.add('shake');
+    errBox.textContent = '账号或密码错误' + (authFails >= 3 ? '（还可尝试 ' + (5 - authFails) + ' 次）' : '');
+    errBox.hidden = false;
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+    if(authFails >= 5){ authLockUntil = now + 30000; authFails = 0; }
+  }
+});
+document.getElementById('passEye').addEventListener('click', function(){
+  const inp = document.getElementById('loginPass');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  this.setAttribute('aria-label', show ? '隐藏密码' : '显示密码');
+  this.querySelector('.ico-eye').style.display = show ? 'none' : '';
+  this.querySelector('.ico-eye-off').style.display = show ? '' : 'none';
+});
+document.getElementById('btnLogout').addEventListener('click', function(){
+  sessionStorage.removeItem(AUTH_KEY);
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').hidden = true;
+  showLogin();
+});
+if(sessionStorage.getItem(AUTH_KEY) === '1'){ hideLogin(); } else { showLogin(); }
+
+init();
+
+
+</script>
+</body>
+</html>
